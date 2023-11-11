@@ -1,3 +1,4 @@
+// Version 2
 #include <SoftwareSerial.h>
 
 SoftwareSerial myserial(10, 11); // RX, TX
@@ -10,8 +11,10 @@ void setup() {
   myserial.begin(9600);
   // Initialize the GPRS connection
   sendATCommand("AT");
+  sendATCommand("AT+CSQ"); // Check signal Quality
   sendATCommand("AT+CPIN?"); // Check if SIM card is ready
   sendATCommand("AT+CREG?"); // Check network registration
+  sendATCommand("AT+CGREG?"); // Check network registration status
   sendATCommand("AT+CGATT?"); // Check GPRS attachment
   sendATCommand("AT+CGDCONT=1,\"IP\",\"airtelgprs\""); // Set APN // "jionet"; //Airtel -> "airtelgprs" //BSNL -> "bsnlnet" //Voda -> portalnmms
   sendATCommand("AT+CGACT=1,1");   // Open a GPRS context
@@ -25,7 +28,8 @@ void makeHTTPGETRequest(const char* url) { // Example: Make an HTTP GET request
   sendATCommand("AT+HTTPPARA=\"URL\",https://farmrobo.chaithanyasaipo.repl.co");
   sendATCommand("AT+HTTPACTION=0");
   delay(10000); // Wait for the HTTP request to complete
-  sendATCommand("AT+HTTPREAD"); // Read and print the HTTP response
+  sendATCommand("AT+HTTPHEAD"); // Read the Head of HTTP response
+  sendATCommand("AT+HTTPREAD=0,500"); // Read and print the HTTP response
   sendATCommand("AT+HTTPTERM"); // Close the HTTP connection
 }
 
