@@ -3,6 +3,8 @@
 
 SoftwareSerial myserial(10, 11); // RX, TX
 
+char url;
+
 void setup() {
   Serial.begin(9600);
   while (!Serial) {
@@ -30,10 +32,10 @@ void setup() {
   
 }
 
-void makeHTTPGETRequest(const char* url) { // Example: Make an HTTP GET request
+void makeHTTPGETRequest(char url) { // Example: Make an HTTP GET request
   sendATCommand("AT+HTTPINIT");
   sendATCommand("HTTPS?");
-  sendATCommand("AT+HTTPPARA=\"URL\",https://WWW.GOOGLE.COM");
+  sendATCommand(("AT+HTTPPARA=\"URL\",\"" + String(url) + "\"").c_str());
   sendATCommand("AT+HTTPACTION=0");
   delay(10000); // Wait for the HTTP request to complete
   sendATCommand("AT+HTTPHEAD"); // Read the Head of HTTP response
