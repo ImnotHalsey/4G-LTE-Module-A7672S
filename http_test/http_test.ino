@@ -35,7 +35,7 @@ void setup() {
 void makeHTTPGETRequest(char url) { // Example: Make an HTTP GET request
   sendATCommand("AT+HTTPINIT");
   sendATCommand("HTTPS?");
-  sendATCommand(("AT+HTTPPARA=\"URL\",\"" + String(url) + "\"").c_str());
+  sendATCommand("AT+HTTPPARA=\"URL\",\"https://farmrobo.chaithanyasaipo.repl.co/\"");
   sendATCommand("AT+HTTPACTION=0");
   delay(10000); // Wait for the HTTP request to complete
   sendATCommand("AT+HTTPHEAD"); // Read the Head of HTTP response
