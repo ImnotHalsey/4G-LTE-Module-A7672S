@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
 class GPRSModule {
-  SoftwareSerial myserial{PG9, PG14}; // RX, TX
+  SoftwareSerial (myserialPG9, PG14); // RX, TX
 
 public:
   void init() {
