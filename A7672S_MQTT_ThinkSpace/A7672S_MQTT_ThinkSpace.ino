@@ -39,12 +39,12 @@ public:
     Serial.println("Setup, Network and GPRS connection Established........");
   }
 
-  void makeHTTPGETRequest() {
+  void makeHTTPGETRequest(const String& fields) {
     checkATCommand("AT+HTTPINIT");
-    String http_str = "AT+HTTPPARA=\"URL\",\"https://api.thingspeak.com/update?api_key=" + Apikey + "&field1=200&field2=300&field3=400\"\r\n";
+    String http_str = "AT+HTTPPARA=\"URL\",\"https://api.thingspeak.com/update?api_key=" + Apikey + fields + "\"\r\n";
     checkATCommand(http_str.c_str()); 
     checkATCommand("AT+HTTPACTION=0");
-    delay(10000); 
+    delay(5000); 
     checkATCommand("AT+HTTPREAD?");
     checkATCommand("AT+HTTPTERM");
   }
@@ -57,6 +57,6 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("LTE Module API hitting code on Force........");
-  gprsModule.makeHTTPGETRequest();
+  String fieldList = "&field1=" + String(random(10, 500)) +"&field2=" + String(random(100, 500)) +"&field3=" + String(random(1000, 5000));
+  gprsModule.makeHTTPGETRequest(fieldList);
 }
