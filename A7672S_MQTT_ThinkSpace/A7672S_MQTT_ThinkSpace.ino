@@ -1,29 +1,24 @@
-#include <SoftwareSerial.h>
-
 class GPRSModule {
 private:
-  SoftwareSerial myserial;
   String Apikey;
 
   void checkATCommand(const char* command) {
-    myserial.println(command);
+    Serial.println(command);
     delay(1000);
-    while (myserial.available()) {
-      char c = myserial.read();
+    while (Serial.available()) {
+      char c = Serial.read();
       Serial.print(c);
     }
     Serial.println();
   }
 
 public:
-  GPRSModule(int rxPin, int txPin, const String& apiKey)
-    : myserial(rxPin, txPin), Apikey(apiKey) {}
+  GPRSModule(const String& apiKey)
+    : Apikey(apiKey) {}
 
   void init() {
     Serial.begin(9600);
     while (!Serial) {}
-
-    myserial.begin(9600);
 
     // Initialize the GPRS connection
     Serial.println("Setup INITIATED........");
@@ -50,13 +45,15 @@ public:
   }
 };
 
-GPRSModule gprsModule(10, 11, "OY0C1KB0VBJGE8KE");
+GPRSModule gprsModule("KWRLY0T8M189DD4U");
 
 void setup() {
   gprsModule.init();
 }
 
 void loop() {
-  String fieldList = "&field1=" + String(random(10, 500)) +"&field2=" + String(random(100, 500)) +"&field3=" + String(random(1000, 5000));
+  String fieldList = "&field1=" + String(random(10, 500)) +
+                     "&field2=" + String(random(100, 500)) +
+                     "&field3=" + String(random(1000, 5000));
   gprsModule.makeHTTPGETRequest(fieldList);
 }
