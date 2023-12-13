@@ -33,7 +33,8 @@ public:
     // Initialize the GPRS connection
     Serial.println("Setup INITIATED........");
     
-    checkATCommand("AT");         // HANDSHAKE
+    checkATCommand("AT");  
+    checkATCommand("AT+IPEX=115200"); 
     checkATCommand("AT+CPIN?"); 
     checkATCommand("AT+CREG=1");  
     checkATCommand("AT+CGREG=1");
