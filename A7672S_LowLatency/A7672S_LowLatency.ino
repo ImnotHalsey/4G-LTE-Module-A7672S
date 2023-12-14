@@ -2,59 +2,48 @@
 
 class GPRSModule {
 private:
-  SoftwareSerial myserial;
+  SoftwareSerial myserial; // RX, TX
   String Apikey;
-
-  void checkATCommand(const char* command) {
-    unsigned long startTime = millis();
-
-    myserial.println(command);
-    delay(1000);
-    
-    while (myserial.available()) {
-      char c = myserial.read();
-      Serial.print(c);
-    }
-    Serial.println();
-
-    unsigned long endTime = millis();
-    Serial.println("Time taken: " + String(endTime - startTime) + " ms");
-  }
 
 public:
   GPRSModule(int rxPin, int txPin, const String& apiKey)
     : myserial(rxPin, txPin), Apikey(apiKey) {}
 
   void init() {
-    Serial.begin(115200);
+    Serial.begin(9600);
     while (!Serial) {}
-
-    myserial.begin(115200);
-    // Initialize the GPRS connection
+    myserial.begin(9600);
     Serial.println("Setup INITIATED........");
-    
-    checkATCommand("AT");  
-    checkATCommand("AT+IPEX=115200"); 
-    checkATCommand("AT+CPIN?"); 
-    checkATCommand("AT+CREG=1");  
-    checkATCommand("AT+CGREG=1");
-    
+    String combinedCommands = "AT\r\n"
+                              "AT+CREG=1\r\n"
+                              "AT+CGREG=1\r\n"
+                              "AT+CGDCONT=1,\"IP\",\"airtelgprs\"\r\n"
+                              "AT+CGACT=1,1\r\n";
+
+    sendATCommand(combinedCommands.c_str());
     Serial.println("Setup, Network and GPRS connection Established........");
   }
 
   void makeHTTPGETRequest(const String& fields) {
-    unsigned long startTime = millis();
+    String url = "https://api.thingspeak.com/update?api_key=" + Apikey + fields;
+    String httpRequest = "AT+HTTPINIT\r\n"
+                        "AT+HTTPPARA=\"URL\",\"" + url + "\"\r\n"
+                        "AT+HTTPACTION=0\r\n"
+                        "AT+HTTPHEAD\r\n"
+                        "AT+HTTPREAD?\r\n"
+                        "AT+HTTPTERM\r\n";
 
-    String http_str = "AT+HTTPINIT\r\n"
-                      "AT+HTTPPARA=\"URL\",\"https://api.thingspeak.com/update?api_key=" + Apikey + fields + "\"\r\n"
-                      "AT+HTTPACTION=0\r\n"
-                      "AT+HTTPREAD?\r\n"
-                      "AT+HTTPTERM\r\n";
+    sendATCommand(httpRequest.c_str());
+  }
 
-    checkATCommand(http_str.c_str());
-
-    unsigned long endTime = millis();
-    Serial.println("Time taken: " + String(endTime - startTime) + " ms");
+private:
+  void sendATCommand(const char* command) {
+    myserial.println(command);
+    delay(500);
+    while (myserial.available()) {
+      char c = myserial.read();
+      Serial.print(c);
+    }
   }
 };
 
@@ -65,6 +54,8 @@ void setup() {
 }
 
 void loop() {
-  String fieldList = "&field1=" + String(random(10, 500)) +"&field2=" + String(random(100, 500)) +"&field3=" + String(random(1000, 5000));
+  String fieldList = "&field1=" + String(random(10, 500)) + "&field2=" + String(random(100, 500)) + "&field3=" + String(random(1000, 5000));
+  Serial.println(fieldList);
   gprsModule.makeHTTPGETRequest(fieldList);
+  delay(15000);
 }
