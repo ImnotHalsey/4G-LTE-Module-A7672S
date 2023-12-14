@@ -30,7 +30,6 @@ public:
                         "AT+HTTPPARA=\"URL\",\"" + url + "\"\r\n"
                         "AT+HTTPACTION=0\r\n"
                         "AT+HTTPHEAD\r\n"
-                        "AT+HTTPREAD?\r\n"
                         "AT+HTTPTERM\r\n";
     unsigned long startTime = millis();
     sendATCommand(httpRequest.c_str());
@@ -61,3 +60,5 @@ void loop() {
   gprsModule.makeHTTPGETRequest(fieldList);
   delay(15000);
 }
+
+//  12:56:59.444 -> Time taken by makeHTTPGETRequest: 181 ms
