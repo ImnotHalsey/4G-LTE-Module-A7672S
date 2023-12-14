@@ -32,14 +32,16 @@ public:
                         "AT+HTTPHEAD\r\n"
                         "AT+HTTPREAD?\r\n"
                         "AT+HTTPTERM\r\n";
-
+    unsigned long startTime = millis();
     sendATCommand(httpRequest.c_str());
+    unsigned long endTime = millis();
+
+    Serial.println("Time taken by makeHTTPGETRequest: " + String(endTime - startTime) + " ms");
   }
 
 private:
   void sendATCommand(const char* command) {
     myserial.println(command);
-    delay(500);
     while (myserial.available()) {
       char c = myserial.read();
       Serial.print(c);
